@@ -56,6 +56,32 @@ jobs:
           VERSION_NAME: ${{ inputs.version_name }}
         run: |
           gh release create "v$VERSION_NAME" app/build/outputs/apk/debug/*.apk --title "Rafiq Muslim $VERSION_NAME" --notes "إصدار جديد من تطبيق رفيق المسلم."
+      - name: Update update.json
+        uses: actions/checkout@v4
+        with:
+          repository: RafiqMuslim-Updates/RafiqMuslim-Updates
+          token: ${{ secrets.UPDATE_REPO_TOKEN }}
+          path: update-repo
+
+      - name: Write update manifest
+        env:
+          VERSION_NAME: ${{ inputs.version_name }}
+        run: |
+          VERSION_CODE=$(grep -oP "versionCodes+K[0-9]+" app/build.gradle | head -1)
+          cat > update-repo/update.json <<EOF
+          {
+            "versionCode": $VERSION_CODE,
+            "versionName": "$VERSION_NAME",
+            "apkUrl": "https://github.com/RafiqMuslim-Updates/RafiqMuslim/releases/download/v$VERSION_NAME/app-debug.apk",
+            "message": "يتوفر إصدار جديد من تطبيق رفيق المسلم. قم بالتحديث للحصول على أحدث المميزات والتحسينات."
+          }
+          EOF
+          cd update-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add update.json
+          git commit -m "Update manifest to $VERSION_NAME" || echo "No changes"
+          git push
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
