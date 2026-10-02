@@ -8,6 +8,9 @@ if (keystorePropsFile.exists()) {
 }
 
 android {
+    buildFeatures {
+        buildConfig true
+    }
     namespace 'app.rafiq.muslim'
     compileSdk 34
     defaultConfig {
