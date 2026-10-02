@@ -34,6 +34,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RafiqMuslim-debug-apk
-          path: RafiqMuslim/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
