@@ -67,7 +67,7 @@ jobs:
         env:
           VERSION_NAME: ${{ inputs.version_name }}
         run: |
-          VERSION_CODE=$(grep -oP "versionCodes+K[0-9]+" app/build.gradle | head -1)
+          VERSION_CODE=$(awk "/versionCode/{print $2; exit}" app/build.gradle)
           cat > update-repo/update.json <<EOF
           {
             "versionCode": $VERSION_CODE,
