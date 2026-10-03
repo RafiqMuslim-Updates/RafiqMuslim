@@ -34,6 +34,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
@@ -125,12 +127,11 @@ public class MainActivity extends Activity {
                 c.setRequestProperty("Accept", "application/json");
                 c.setUseCaches(false);
                 if (c.getResponseCode() < 200 || c.getResponseCode() >= 300) return;
-                InputStream in = new BufferedInputStream(c.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream(), "UTF-8"));
                 StringBuilder out = new StringBuilder();
-                byte[] buf = new byte[4096];
-                int n;
-                while ((n = in.read(buf)) != -1) out.append(new String(buf, 0, n, "UTF-8"));
-                in.close();
+                String line;
+                while ((line = reader.readLine()) != null) out.append(line);
+                reader.close();
                 JSONObject update = new JSONObject(out.toString());
                 int remoteCode = update.optInt("versionCode", BuildConfig.VERSION_CODE);
                 if (remoteCode <= BuildConfig.VERSION_CODE) return;
@@ -195,7 +196,6 @@ public class MainActivity extends Activity {
                 if (!dir.exists() && !dir.mkdirs()) throw new Exception("Cannot create update directory");
                 target = new File(dir, "rafiq-muslim-update-" + remoteCode + ".apk");
 
-                try (InputStream in = new BufferedInputStream(c.getInputStream()); FileOutputStream out = new FileOutputStream(target)) {
                     byte[] buf = new byte[8192];
                     long done = 0;
                     int n;
