@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) { return loader.shouldInterceptRequest(r.getUrl()); }
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 if (HOST.equals(r.getUrl().getHost())) return false;
-                try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception ignored) { }
+                try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { e.printStackTrace(); runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "فشل فحص التحديث: " + e.getClass().getSimpleName(), android.widget.Toast.LENGTH_LONG).show()); }
                 return true;
             }
         });
@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
                 String versionName = update.optString("versionName", "").trim();
                 String message = update.optString("message", "يتوفر إصدار جديد من تطبيق رفيق المسلم.").trim();
                 runOnUiThread(() -> showUpdateDialog(remoteCode, versionName, message, apkUrl));
-            } catch (Exception ignored) {
+            } catch (Exception e) { e.printStackTrace(); runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "فشل فحص التحديث: " + e.getClass().getSimpleName(), android.widget.Toast.LENGTH_LONG).show());
                 // Update checks are optional; the app continues normally if the network is unavailable.
             } finally {
                 if (c != null) c.disconnect();
@@ -250,7 +250,7 @@ public class MainActivity extends Activity {
                     Uri.parse("package:" + getPackageName()));
                 startActivity(i);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) { e.printStackTrace(); runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "فشل فحص التحديث: " + e.getClass().getSimpleName(), android.widget.Toast.LENGTH_LONG).show());
             try { startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS)); } catch (Exception ignored2) { }
         }
     }
@@ -311,7 +311,7 @@ public class MainActivity extends Activity {
                     startService(new Intent(this, AdhanService.class).setAction(AdhanService.ACT_STOP)); break;
                 default: break;
             }
-        } catch (Exception ignored) { }
+        } catch (Exception e) { e.printStackTrace(); runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "فشل فحص التحديث: " + e.getClass().getSimpleName(), android.widget.Toast.LENGTH_LONG).show()); }
         resolve(id, status());
     }
 
@@ -324,7 +324,7 @@ public class MainActivity extends Activity {
             o.put("exact", Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms());
             o.put("battery", ((PowerManager) getSystemService(Context.POWER_SERVICE)).isIgnoringBatteryOptimizations(getPackageName()));
             o.put("armed", AdhanScheduler.prefs(this).getInt(AdhanScheduler.K_ARMED, -1) >= 0);
-        } catch (Exception ignored) { }
+        } catch (Exception e) { e.printStackTrace(); runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "فشل فحص التحديث: " + e.getClass().getSimpleName(), android.widget.Toast.LENGTH_LONG).show()); }
         return o;
     }
 }
