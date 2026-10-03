@@ -196,6 +196,9 @@ public class MainActivity extends Activity {
                 if (!dir.exists() && !dir.mkdirs()) throw new Exception("Cannot create update directory");
                 target = new File(dir, "rafiq-muslim-update-" + remoteCode + ".apk");
 
+                InputStream in = new BufferedInputStream(c.getInputStream());
+                FileOutputStream out = new FileOutputStream(target);
+                try {
                     byte[] buf = new byte[8192];
                     long done = 0;
                     int n;
@@ -209,6 +212,9 @@ public class MainActivity extends Activity {
                             });
                         }
                     }
+                } finally {
+                    in.close();
+                    out.close();
                 }
 
                 File finalTarget = target;
